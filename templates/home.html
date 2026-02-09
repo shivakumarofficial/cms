@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+
+{% block extra_css %}
+<style>
+    .welcome-section {
+        margin-bottom: 60px;
+    }
+    
+    .welcome-title {
+        font-size: 48px;
+        font-weight: 700;
+        color: #3b82f6;
+        margin-bottom: 10px;
+    }
+    
+    .welcome-subtitle {
+        font-size: 18px;
+        color: #666;
+        margin-bottom: 40px;
+    }
+    
+    .greeting {
+        font-size: 32px;
+        font-weight: 600;
+        margin-bottom: 10px;
+    }
+    
+    .question {
+        font-size: 16px;
+        color: #666;
+        margin-bottom: 40px;
+    }
+    
+    .action-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 24px;
+    }
+    
+    .action-card {
+        background: white;
+        border-radius: 12px;
+        padding: 32px;
+        text-decoration: none;
+        color: #333;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        transition: all 0.3s;
+        border: 1px solid #e5e7eb;
+    }
+    
+    .action-card:hover {
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        transform: translateY(-2px);
+    }
+    
+    .card-icon {
+        width: 48px;
+        height: 48px;
+        background-color: #eff6ff;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 20px;
+        color: #3b82f6;
+    }
+    
+    .card-icon svg {
+        width: 24px;
+        height: 24px;
+    }
+    
+    .card-title {
+        font-size: 20px;
+        font-weight: 600;
+        margin-bottom: 8px;
+        text-decoration: underline;
+    }
+    
+    .card-description {
+        font-size: 14px;
+        color: #666;
+        line-height: 1.5;
+    }
+
+    .top-button-section {
+        display: flex;
+        justify-content: flex-end;
+        margin-bottom: 30px;
+    }
+
+    
+
+   
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="welcome-section">
+    <h1 class="welcome-title">Welcome to CMS</h1>
+    <p class="welcome-subtitle">Your time-off management system</p>
+</div>
+<div class="greeting">Hello, {{ user.first_name }}!</div>
+<p class="question">What would you like to do today?</p>
+
+<div class="action-cards">
+    <a href="{% url 'new_request' %}" class="action-card">
+        <div class="card-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="5" x2="12" y2="19"/>
+                <line x1="5" y1="12" x2="19" y2="12"/>
+            </svg>
+        </div>
+        <div class="card-title">Submit Request</div>
+        <p class="card-description">Create a new time-off request</p>
+    </a>
+    
+    <a href="{% url 'manage_requests' %}" class="action-card">
+        <div class="card-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 11l3 3L22 4"/>
+                <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+            </svg>
+        </div>
+        <div class="card-title">Manage Requests</div>
+        <p class="card-description">View and manage your pending requests</p>
+    </a>
+    
+    <a href="{% url 'history' %}" class="action-card">
+        <div class="card-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <polyline points="12 6 12 12 16 14"/>
+            </svg>
+        </div>
+        <div class="card-title">View History</div>
+        <p class="card-description">See your past time-off requests</p>
+    </a>
+</div>
+{% endblock %}

@@ -1,0 +1,185 @@
+{% extends 'base.html' %}
+
+{% block extra_css %}
+<style>
+    .page-header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+    
+    .page-title {
+        font-size: 36px;
+        font-weight: 700;
+        margin-bottom: 10px;
+    }
+    
+    .page-subtitle {
+        font-size: 16px;
+        color: #666;
+    }
+    
+    .filter-section {
+        background: white;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        margin-bottom: 30px;
+    }
+    
+    .filter-form {
+        display: flex;
+        gap: 20px;
+        align-items: flex-end;
+        flex-wrap: wrap;
+    }
+    
+    .form-group {
+        flex: 1;
+        min-width: 200px;
+    }
+    
+    .form-label {
+        display: block;
+        font-size: 14px;
+        font-weight: 500;
+        margin-bottom: 8px;
+        color: #374151;
+    }
+    
+    .form-control {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        font-size: 14px;
+        background-color: white;
+    }
+    
+    .form-control:focus {
+        outline: none;
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+    
+    .btn {
+        padding: 10px 24px;
+        border: none;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    
+    .btn-primary {
+        background-color: #3b82f6;
+        color: white;
+    }
+    
+    .btn-primary:hover {
+        background-color: #2563eb;
+    }
+    
+    .helper-text {
+        text-align: center;
+        color: #6b7280;
+        font-size: 14px;
+        margin-top: 15px;
+    }
+    
+    .holidays-list {
+        background: white;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    
+    .holiday-item {
+        padding: 16px 0;
+        border-bottom: 1px solid #e5e7eb;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .holiday-item:last-child {
+        border-bottom: none;
+    }
+    
+    .holiday-name {
+        font-weight: 500;
+        color: #1f2937;
+    }
+    
+    .holiday-date {
+        color: #6b7280;
+        font-size: 14px;
+    }
+    
+    .no-holidays {
+        text-align: center;
+        padding: 40px;
+        color: #9ca3af;
+    }
+    
+    .add-holiday-btn {
+        margin-bottom: 20px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">Holidays and Observances</h1>
+    <p class="page-subtitle">2025 public holidays and non-working days</p>
+</div>
+
+{% if user.role == 'admin' %}
+<div class="add-holiday-btn">
+    <a href="{% url 'add_holiday' %}" class="btn btn-primary">+ Add Holiday</a>
+</div>
+{% endif %}
+
+<div class="filter-section">
+    <form method="GET" class="filter-form">
+        <div class="form-group">
+            <label class="form-label">Country</label>
+            <select name="country" class="form-control">
+                <option value="USA" {% if selected_country == 'USA' %}selected{% endif %}>USA</option>
+                <option value="UK" {% if selected_country == 'UK' %}selected{% endif %}>UK</option>
+                <option value="India" {% if selected_country == 'India' %}selected{% endif %}>India</option>
+                <option value="Canada" {% if selected_country == 'Canada' %}selected{% endif %}>Canada</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label class="form-label">Location</label>
+            <select name="location" class="form-control">
+                <option value="ALL" {% if selected_location == 'ALL' %}selected{% endif %}>ALL</option>
+                {% for loc in locations %}
+                    {% if loc != 'ALL' %}
+                    <option value="{{ loc }}" {% if selected_location == loc %}selected{% endif %}>{{ loc }}</option>
+                    {% endif %}
+                {% endfor %}
+            </select>
+        </div>
+        
+        <button type="submit" class="btn btn-primary">SHOW</button>
+    </form>
+    
+    <p class="helper-text">Select a country and location, then click "SHOW" to view holidays.</p>
+</div>
+
+<div class="holidays-list">
+    {% if holidays %}
+        {% for holiday in holidays %}
+        <div class="holiday-item">
+            <div class="holiday-name">{{ holiday.name }}</div>
+            <div class="holiday-date">{{ holiday.date|date:"F d, Y" }}</div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="no-holidays">No holidays found for the selected location.</div>
+    {% endif %}
+</div>
+{% endblock %}

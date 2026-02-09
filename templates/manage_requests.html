@@ -1,0 +1,194 @@
+{% extends 'base.html' %}
+
+{% block extra_css %}
+<style>
+    .page-header {
+        margin-bottom: 30px;
+    }
+    
+    .page-title {
+        font-size: 32px;
+        font-weight: 700;
+        margin-bottom: 8px;
+    }
+    
+    .requests-container {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        overflow: hidden;
+    }
+    
+    .requests-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    
+    .requests-table thead {
+        background-color: #f9fafb;
+        border-bottom: 1px solid #e5e7eb;
+    }
+    
+    .requests-table th {
+        padding: 16px;
+        text-align: left;
+        font-size: 13px;
+        font-weight: 600;
+        color: #6b7280;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+    
+    .requests-table td {
+        padding: 16px;
+        border-bottom: 1px solid #e5e7eb;
+        font-size: 14px;
+    }
+    
+    .requests-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+    
+    .requests-table tbody tr:hover {
+        background-color: #f9fafb;
+    }
+    
+    .status-badge {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: capitalize;
+    }
+    
+    .status-pending {
+        background-color: #fef3c7;
+        color: #92400e;
+    }
+    
+    .status-approved {
+        background-color: #d1fae5;
+        color: #065f46;
+    }
+    
+    .status-rejected {
+        background-color: #fee2e2;
+        color: #991b1b;
+    }
+    
+    .action-buttons {
+        display: flex;
+        gap: 8px;
+    }
+    
+    .btn-sm {
+        padding: 6px 16px;
+        border: none;
+        border-radius: 6px;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-decoration: none;
+        display: inline-block;
+    }
+    
+    .btn-approve {
+        background-color: #10b981;
+        color: white;
+    }
+    
+    .btn-approve:hover {
+        background-color: #059669;
+    }
+    
+    .btn-reject {
+        background-color: #ef4444;
+        color: white;
+    }
+    
+    .btn-reject:hover {
+        background-color: #dc2626;
+    }
+    
+    .no-requests {
+        text-align: center;
+        padding: 60px 20px;
+        color: #9ca3af;
+    }
+    
+    .no-requests-icon {
+        width: 64px;
+        height: 64px;
+        margin: 0 auto 16px;
+        opacity: 0.3;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">
+        {% if user.role == 'employee' %}
+        My Requests
+        {% else %}
+        Pending Requests
+        {% endif %}
+    </h1>
+</div>
+
+<div class="requests-container">
+    {% if requests %}
+    <table class="requests-table">
+        <thead>
+            <tr>
+                <th>Employee</th>
+                <th>Type</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th>Status</th>
+                <th>Submitted</th>
+                {% if user.role != 'employee' %}
+                <th>Actions</th>
+                {% endif %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for request in requests %}
+            <tr>
+                <td>{{ request.user.get_full_name }}</td>
+                <td style="text-transform: capitalize;">{{ request.type }}</td>
+                <td>{{ request.start_date|date:"M d, Y" }}</td>
+                <td>{{ request.end_date|date:"M d, Y" }}</td>
+                <td>
+                    <span class="status-badge status-{{ request.status }}">
+                        {{ request.status }}
+                    </span>
+                </td>
+                <td>{{ request.created_at|date:"M d, Y" }}</td>
+                {% if user.role != 'employee' %}
+                <td>
+                    {% if request.status == 'pending' %}
+                    <div class="action-buttons">
+                        <a href="{% url 'approve_request' request.id %}" class="btn-sm btn-approve">Approve</a>
+                        <a href="{% url 'reject_request' request.id %}" class="btn-sm btn-reject">Reject</a>
+                    </div>
+                    {% endif %}
+                </td>
+                {% endif %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="no-requests">
+        <svg class="no-requests-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 11l3 3L22 4"/>
+            <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+        </svg>
+        <p>No requests to display</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

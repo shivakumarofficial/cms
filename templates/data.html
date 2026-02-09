@@ -1,0 +1,155 @@
+{% extends 'base.html' %}
+
+{% block extra_css %}
+<style>
+    .page-container {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 40px 20px;
+    }
+    
+    .page-header {
+        text-align: center;
+        margin-bottom: 50px;
+    }
+    
+    .page-title {
+        font-size: 28px;
+        font-weight: 600;
+        color: #1f2937;
+        margin-bottom: 0;
+    }
+    
+    .work-data-container {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        overflow: hidden;
+        margin-bottom: 30px;
+    }
+    
+    .work-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    
+    .work-table thead {
+        background-color: #f9fafb;
+        border-bottom: 2px solid #e5e7eb;
+    }
+    
+    .work-table th {
+        padding: 16px 20px;
+        text-align: left;
+        font-size: 14px;
+        font-weight: 600;
+        color: #374151;
+    }
+    
+    .work-table th:first-child {
+        padding-left: 30px;
+    }
+    
+    .work-table td {
+        padding: 16px 20px;
+        border-bottom: 1px solid #f3f4f6;
+        font-size: 14px;
+        color: #1f2937;
+    }
+    
+    .work-table td:first-child {
+        padding-left: 30px;
+        font-weight: 500;
+    }
+    
+    .work-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+    
+    .work-table tbody tr:hover {
+        background-color: #fafafa;
+    }
+    
+    .download-section {
+        text-align: center;
+        padding: 30px;
+    }
+    
+    .btn-download {
+        background-color: #3b82f6;
+        color: white;
+        padding: 14px 32px;
+        border: none;
+        border-radius: 8px;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-decoration: none;
+        display: inline-block;
+    }
+    
+    .btn-download:hover {
+        background-color: #2563eb;
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        transform: translateY(-1px);
+    }
+    
+    .btn-download:active {
+        transform: translateY(0);
+    }
+    
+    .text-center {
+        text-align: center;
+    }
+    
+    .text-right {
+        text-align: right;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <div class="page-header">
+        <h1 class="page-title">Work Data</h1>
+    </div>
+    
+    <div class="work-data-container">
+        <table class="work-table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th class="text-center">Holiday Days</th>
+                    <th class="text-center">Jiatiao Days</th>
+                    <th class="text-center">Work Days</th>
+                    <th class="text-right">Work Hours</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for data in work_data %}
+                <tr>
+                    <td>{{ data.name }}</td>
+                    <td class="text-center">{{ data.holiday_days }}</td>
+                    <td class="text-center">{{ data.jiatiao_days }}</td>
+                    <td class="text-center">{{ data.work_days }}</td>
+                    <td class="text-right">{{ data.work_hours }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center" style="padding: 40px; color: #9ca3af;">
+                        No work data available
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="download-section">
+        <a href="{% url 'download_pdf_report' %}" class="btn-download">
+            Download PDF Report For All Team Members
+        </a>
+    </div>
+</div>
+{% endblock %}
