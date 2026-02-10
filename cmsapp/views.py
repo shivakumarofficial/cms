@@ -149,9 +149,14 @@ def review_view(request):
     if request.user.role not in ['manager', 'admin']:
         messages.error(request, 'You do not have permission to access this page')
         return redirect('home')
-    
+
     pending_requests = TimeOffRequest.objects.filter(status='pending')
-    return render(request, 'review.html', {'requests': pending_requests})
+    past_requests = TimeOffRequest.objects.exclude(status='pending')
+
+    return render(request, 'review.html', {
+        'pending_requests': pending_requests,
+        'past_requests': past_requests
+    })
 
 @login_required
 def data_view(request):
@@ -175,15 +180,13 @@ def data_view(request):
         ).count() * 2  # Assuming average 2 days per request
         
         # Calculate Jiatiao days (sick leave or other approved leave)
-        jiatiao_days = TimeOffRequest.objects.filter(
+        # CORRECT
+        jiatiao_count = TimeOffRequest.objects.filter(
             user=user,
             type__in=['sick', 'personal'],
             status='approved'
-        ).aggregate(
-            total=Sum(
-                Count('id')
-            )
-        )['total'] or 0
+        ).count()
+        jiatiao_days = jiatiao_count * 2
         jiatiao_days = jiatiao_days * 2  # Assuming average 2 days per request
         
         # Calculate work days (assuming 20 work days per month)
