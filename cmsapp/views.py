@@ -218,109 +218,70 @@ def download_pdf_report(request):
     if request.user.role != 'admin':
         messages.error(request, 'Only admins can download reports')
         return redirect('home')
-    
+
     from django.http import HttpResponse
-    from reportlab.lib import colors
-    from reportlab.lib.pagesizes import letter, A4
     from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
-    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+    from reportlab.lib import colors
+    from reportlab.lib.pagesizes import A4
+    from reportlab.lib.styles import getSampleStyleSheet
     from reportlab.lib.units import inch
     from io import BytesIO
     from datetime import datetime
-    
-    # Create a file-like buffer to receive PDF data
+
     buffer = BytesIO()
-    
-    # Create the PDF object
     doc = SimpleDocTemplate(buffer, pagesize=A4)
     elements = []
-    
-    # Styles
+
     styles = getSampleStyleSheet()
-    title_style = ParagraphStyle(
-        'CustomTitle',
-        parent=styles['Heading1'],
-        fontSize=24,
-        textColor=colors.HexColor('#1f2937'),
-        spaceAfter=30,
-        alignment=1  # Center
-    )
-    
-    # Add title
-    title = Paragraph("Work Data Report", title_style)
+    title = Paragraph("Work Data Report", styles["Heading1"])
     elements.append(title)
-    
-    # Add date
-    date_text = Paragraph(
-        f"Generated on: {datetime.now().strftime('%B %d, %Y')}",
-        styles['Normal']
-    )
-    elements.append(date_text)
     elements.append(Spacer(1, 20))
-    
-    # Get work data
-    users = User.objects.all().order_by('first_name')
+
+    # Prepare table data
     data = [['Name', 'Holiday Days', 'Jiatiao Days', 'Work Days', 'Work Hours']]
-    
+
+    users = User.objects.all().order_by('first_name')
+
     for user in users:
         holiday_days = TimeOffRequest.objects.filter(
-            user=user,
-            type='vacation',
-            status='approved'
+            user=user, type='vacation', status='approved'
         ).count() * 2
-        
+
         jiatiao_days = TimeOffRequest.objects.filter(
-            user=user,
-            type__in=['sick', 'personal'],
-            status='approved'
+            user=user, type__in=['sick', 'personal'], status='approved'
         ).count() * 2
-        
-        work_days = 20 - (holiday_days + jiatiao_days) if (20 - (holiday_days + jiatiao_days)) > 0 else 0
+
+        work_days = max(0, 20 - (holiday_days + jiatiao_days))
         work_hours = work_days * 8
-        
+
         data.append([
             user.get_full_name() or user.username,
             str(holiday_days),
             str(jiatiao_days),
             str(work_days),
-            str(work_hours)
+            str(work_hours),
         ])
-    
-    # Create table
-    table = Table(data, colWidths=[2.5*inch, 1.2*inch, 1.2*inch, 1.2*inch, 1.2*inch])
-    
-    # Add style to table
+
+    table = Table(data, colWidths=[2.5*inch, 1*inch, 1*inch, 1*inch, 1*inch])
+
     table.setStyle(TableStyle([
-        ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#f9fafb')),
-        ('TEXTCOLOR', (0, 0), (-1, 0), colors.HexColor('#374151')),
+        ('BACKGROUND', (0, 0), (-1, 0), colors.lightgrey),
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.black),
         ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-        ('ALIGN', (0, 1), (0, -1), 'LEFT'),
         ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-        ('FONTSIZE', (0, 0), (-1, 0), 12),
-        ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
-        ('BACKGROUND', (0, 1), (-1, -1), colors.white),
-        ('TEXTCOLOR', (0, 1), (-1, -1), colors.HexColor('#1f2937')),
-        ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
-        ('FONTSIZE', (0, 1), (-1, -1), 10),
-        ('GRID', (0, 0), (-1, -1), 1, colors.HexColor('#e5e7eb')),
-        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
-        ('LEFTPADDING', (0, 0), (-1, -1), 12),
-        ('RIGHTPADDING', (0, 0), (-1, -1), 12),
-        ('TOPPADDING', (0, 0), (-1, -1), 8),
-        ('BOTTOMPADDING', (0, 0), (-1, -1), 8),
+        ('GRID', (0, 0), (-1, -1), 1, colors.black),
     ]))
-    
+
     elements.append(table)
-    
-    # Build PDF
     doc.build(elements)
-    
-    # Get the value of the BytesIO buffer and write it to the response
+
     pdf = buffer.getvalue()
     buffer.close()
-    
+
     response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = f'attachment; filename="work_data_report_{datetime.now().strftime("%Y%m%d")}.pdf"'
+    response['Content-Disposition'] = (
+        f'attachment; filename="work_data_report_{datetime.now().strftime("%Y%m%d")}.pdf"'
+    )
     response.write(pdf)
-    
+
     return response

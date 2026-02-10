@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        @page {
+            size: A4;
+            margin: 2cm;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            color: #1f2937;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        h1 {
+            font-size: 28px;
+            color: #1f2937;
+            margin-bottom: 10px;
+        }
+        
+        .date {
+            font-size: 14px;
+            color: #6b7280;
+            margin-bottom: 30px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        thead {
+            background-color: #f9fafb;
+        }
+        
+        th {
+            padding: 12px;
+            text-align: left;
+            font-size: 12px;
+            font-weight: 600;
+            color: #374151;
+            border: 1px solid #e5e7eb;
+        }
+        
+        th:not(:first-child) {
+            text-align: center;
+        }
+        
+        td {
+            padding: 10px 12px;
+            font-size: 11px;
+            border: 1px solid #e5e7eb;
+        }
+        
+        td:first-child {
+            text-align: left;
+            font-weight: 500;
+        }
+        
+        td:not(:first-child) {
+            text-align: center;
+        }
+        
+        tbody tr:nth-child(even) {
+            background-color: #fafafa;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Work Data Report</h1>
+        <div class="date">Generated on: {{ date }}</div>
+    </div>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Holiday Days</th>
+                <th>Jiatiao Days</th>
+                <th>Work Days</th>
+                <th>Work Hours</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for data in work_data %}
+            <tr>
+                <td>{{ data.name }}</td>
+                <td>{{ data.holiday_days }}</td>
+                <td>{{ data.jiatiao_days }}</td>
+                <td>{{ data.work_days }}</td>
+                <td>{{ data.work_hours }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
