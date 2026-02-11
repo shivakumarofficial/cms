@@ -76,6 +76,11 @@
         background-color: #fee2e2;
         color: #991b1b;
     }
+
+    .status-withdrawn {
+        background-color: #e5e7eb;
+        color: #374151;
+    }
     
     .action-buttons {
         display: flex;
@@ -111,6 +116,15 @@
     .btn-reject:hover {
         background-color: #dc2626;
     }
+
+    .btn-withdraw {
+        background-color: #6b7280;
+        color: white;
+    }
+
+    .btn-withdraw:hover {
+        background-color: #4b5563;
+    }
     
     .no-requests {
         text-align: center;
@@ -131,9 +145,9 @@
 <div class="page-header">
     <h1 class="page-title">
         {% if user.role == 'employee' %}
-        My Requests
+            My Requests
         {% else %}
-        Pending Requests
+            Pending Requests
         {% endif %}
     </h1>
 </div>
@@ -149,9 +163,7 @@
                 <th>End Date</th>
                 <th>Status</th>
                 <th>Submitted</th>
-                {% if user.role != 'employee' %}
                 <th>Actions</th>
-                {% endif %}
             </tr>
         </thead>
         <tbody>
@@ -167,16 +179,24 @@
                     </span>
                 </td>
                 <td>{{ request.created_at|date:"M d, Y" }}</td>
-                {% if user.role != 'employee' %}
                 <td>
-                    {% if request.status == 'pending' %}
                     <div class="action-buttons">
-                        <a href="{% url 'approve_request' request.id %}" class="btn-sm btn-approve">Approve</a>
-                        <a href="{% url 'reject_request' request.id %}" class="btn-sm btn-reject">Reject</a>
+
+                        {% if user.role != 'employee' and request.status == 'pending' %}
+                            <a href="{% url 'approve_request' request.id %}" class="btn-sm btn-approve">Approve</a>
+                            <a href="{% url 'reject_request' request.id %}" class="btn-sm btn-reject">Reject</a>
+                        {% endif %}
+
+                        {% if user.role == 'employee' and request.status == 'pending' %}
+                            <a href="{% url 'withdraw_request' request.id %}" 
+                               class="btn-sm btn-withdraw"
+                               onclick="return confirm('Are you sure you want to withdraw this request?');">
+                                Withdraw
+                            </a>
+                        {% endif %}
+
                     </div>
-                    {% endif %}
                 </td>
-                {% endif %}
             </tr>
             {% endfor %}
         </tbody>

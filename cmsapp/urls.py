@@ -16,4 +16,6 @@ urlpatterns = [
     path('download-pdf-report/', views.download_pdf_report, name='download_pdf_report'),
     path('approve/<int:request_id>/', views.approve_request, name='approve_request'),
     path('reject/<int:request_id>/', views.reject_request, name='reject_request'),
+    path('withdraw/<int:request_id>/', views.withdraw_request, name='withdraw_request'),
+
 ]

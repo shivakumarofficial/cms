@@ -16,11 +16,13 @@ class User(AbstractUser):
         return f"{self.get_full_name()} ({self.role})"
 
 class TimeOffRequest(models.Model):
-    STATUS_CHOICES = (
-        ('pending', 'Pending'),
-        ('approved', 'Approved'),
-        ('rejected', 'Rejected'),
-    )
+    STATUS_CHOICES = [
+    ('pending', 'Pending'),
+    ('approved', 'Approved'),
+    ('rejected', 'Rejected'),
+    ('withdrawn', 'Withdrawn'),
+]
+
     
     TYPE_CHOICES = (
         ('vacation', 'Vacation'),

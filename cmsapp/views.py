@@ -108,6 +108,21 @@ def reject_request(request, request_id):
     return redirect('manage_requests')
 
 @login_required
+def withdraw_request(request, request_id):
+    # Only employee who created the request can withdraw
+    time_off_request = get_object_or_404(TimeOffRequest, id=request_id, user=request.user)
+
+    if time_off_request.status != 'pending':
+        messages.error(request, 'Only pending requests can be withdrawn')
+        return redirect('manage_requests')
+
+    time_off_request.status = 'withdrawn'
+    time_off_request.save()
+
+    messages.success(request, 'Request withdrawn successfully!')
+    return redirect('manage_requests')
+
+@login_required
 def holidays_view(request):
     country = request.GET.get('country', 'USA')
     location = request.GET.get('location', 'ALL')
