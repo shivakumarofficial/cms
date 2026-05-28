@@ -26,9 +26,9 @@ SECRET_KEY = 'django-insecure-i%oxpz1ooga%6%wjl0e44pem6_54((gccf-0w)08@*b*pz1*=#
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    ".onrender.com",
-    "localhost",
+    "cms-jet-five.vercel.app",
     "127.0.0.1",
+    "localhost"
 ]
 
 
